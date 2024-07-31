@@ -1,37 +1,9 @@
 [
     {
-        "title": "Buy groceries",
-        "description": "Buy fruits and vegetables",
-        "due_date": "2024-07-30",
-        "priority": "High",
-        "completed": false
-    },
-    {
-        "title": "Buy groceries",
-        "description": "Buy fruits and vegetables",
-        "due_date": "2024-07-30",
-        "priority": "High",
-        "completed": false
-    },
-    {
-        "title": "Buy groceries",
-        "description": "Buy fruits and vegetables",
-        "due_date": "2024-07-30",
-        "priority": "High",
-        "completed": false
-    },
-    {
-        "title": "Buy groceries",
-        "description": "Buy fruits and vegetables",
-        "due_date": "2024-07-30",
-        "priority": "High",
-        "completed": false
-    },
-    {
-        "title": "Buy groceries",
-        "description": "Buy fruits and vegetables",
-        "due_date": "2024-07-30",
-        "priority": "High",
+        "title": "Buy vegetables",
+        "description": "Buy carrots and spinach",
+        "due_date": "2024-08-02",
+        "priority": "Medium",
         "completed": false
     }
 ]

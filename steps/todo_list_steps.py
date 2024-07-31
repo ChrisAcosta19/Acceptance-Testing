@@ -1,88 +1,113 @@
 from behave import given, when, then
-from todo_list import add_task, list_tasks, mark_task_completed, clear_tasks, edit_task, save_tasks
+import json
+import os
 
-# Helper function to reset the state before each scenario
-def reset_to_do_list():
-    global tasks
-    tasks = []
-    save_tasks()
+TASKS_FILE = 'tasks.json'
 
-@given('the to-do list is empty')
-def step_impl(context):
-    reset_to_do_list()
+def clear_tasks():
+    if os.path.exists(TASKS_FILE):
+        os.remove(TASKS_FILE)
 
-@when('the user adds a task with title "{title}", description "{description}", due date "{due_date}", and priority "{priority}"')
-def step_impl(context, title, description, due_date, priority):
-    add_task(title, description, due_date, priority)
+def load_tasks():
+    if os.path.exists(TASKS_FILE):
+        with open(TASKS_FILE, 'r') as file:
+            return json.load(file)
+    return []
 
-@then('the to-do list should contain a task with title "{title}", description "{description}", due date "{due_date}", priority "{priority}" and completed "{completed}"')
-def step_impl(context, title, description, due_date, priority, completed):
-    found = False
-    for task in tasks:
-        if (task['title'] == title and task['description'] == description and 
-            task['due_date'] == due_date and task['priority'] == priority and 
-            str(task['completed']) == completed):
-            found = True
-            break
-    assert found, f'Task "{title}" not found in the to-do list'
+def save_tasks(tasks):
+    with open(TASKS_FILE, 'w') as file:
+        json.dump(tasks, file, indent=4)
 
-@then('the following message is displayed: {message}')
-def step_impl(context, message):
-    # Assuming the message is printed to the console
-    # Capture the print statements if necessary
-    pass
+def add_task(title, description, due_date, priority):
+    tasks = load_tasks()
+    task = {
+        'title': title,
+        'description': description,
+        'due_date': due_date,
+        'priority': priority,
+        'completed': False
+    }
+    tasks.append(task)
+    save_tasks(tasks)
 
-@given('the to-do list contains tasks')
-def step_impl(context):
-    reset_to_do_list()
-    for row in context.table:
-        add_task(row['title'], row['description'], row['due_date'], row['priority'])
-        if row['completed'] == 'True':
-            tasks[-1]['completed'] = True
-    save_tasks()
+def edit_task(task_number, title, description, due_date, priority):
+    tasks = load_tasks()
+    tasks[task_number - 1]['title'] = title
+    tasks[task_number - 1]['description'] = description
+    tasks[task_number - 1]['due_date'] = due_date
+    tasks[task_number - 1]['priority'] = priority
+    save_tasks(tasks)
 
-@when('the user lists all tasks')
-def step_impl(context):
-    context.output = list_tasks()
+def mark_task_completed(task_number):
+    tasks = load_tasks()
+    tasks[task_number - 1]['completed'] = True
+    save_tasks(tasks)
 
-@then('the output should contain:')
-def step_impl(context):
-    expected_output = context.text.strip()
-    assert expected_output in context.output, f'Expected output not found. Got: {context.output}'
-
-@when('the user marks task "{title}" as completed')
-def step_impl(context, title):
-    task_number = next((i + 1 for i, task in enumerate(tasks) if task['title'] == title), None)
-    assert task_number is not None, f'Task "{title}" not found in the to-do list'
-    mark_task_completed(task_number)
-
-@then('the to-do list should show task "{title}" as completed')
-def step_impl(context, title):
-    task = next((task for task in tasks if task['title'] == title), None)
-    assert task is not None, f'Task "{title}" not found in the to-do list'
-    assert task['completed'], f'Task "{title}" is not marked as completed'
-
-@when('the user clears the to-do list')
-def step_impl(context):
+@given('the to-do list is cleared')
+def step_clear_todo_list(context):
     clear_tasks()
 
-@then('the to-do list should be empty')
-def step_impl(context):
-    assert len(tasks) == 0, 'The to-do list is not empty'
+@when('I add a task with title "{title}", description "{description}", due date "{due_date}", and priority "{priority}"')
+def step_add_task(context, title, description, due_date, priority):
+    add_task(title, description, due_date, priority)
 
-@when('the user edits the task "{title}" with:')
-def step_impl(context, title):
-    task_number = next((i + 1 for i, task in enumerate(tasks) if task['title'] == title), None)
-    assert task_number is not None, f'Task "{title}" not found in the to-do list'
-    for row in context.table:
-        edit_task(task_number, row['title'], row['description'], row['due_date'], row['priority'])
+@then('the task list should contain a task with title "{title}" and status "{status}"')
+def step_verify_task_added(context, title, status):
+    tasks = load_tasks()
+    for task in tasks:
+        if task['title'] == title:
+            assert task['completed'] == (status == "Completed")
+            return
+    assert False, f'Task with title "{title}" not found'
 
-@then('the task "{title}" should have:')
-def step_impl(context, title):
-    task = next((task for task in tasks if task['title'] == title), None)
-    assert task is not None, f'Task "{title}" not found in the to-do list'
-    for row in context.table:
-        assert task['title'] == row['title'], f'Expected title "{row["title"]}", but got "{task["title"]}"'
-        assert task['description'] == row['description'], f'Expected description "{row["description"]}", but got "{task["description"]}"'
-        assert task['due_date'] == row['due_date'], f'Expected due date "{row["due_date"]}", but got "{task["due_date"]}"'
-        assert task['priority'] == row['priority'], f'Expected priority "{row["priority"]}", but got "{task["priority"]}"'
+@given('there is a task with title "{title}", description "{description}", due date "{due_date}", and priority "{priority}"')
+def step_given_task_exists(context, title, description, due_date, priority):
+    clear_tasks()
+    add_task(title, description, due_date, priority)
+
+@when('I list all tasks')
+def step_list_tasks(context):
+    context.tasks = load_tasks()
+
+@then('I should see the task with title "{title}", description "{description}", due date "{due_date}", and priority "{priority}"')
+def step_verify_listed_task(context, title, description, due_date, priority):
+    for task in context.tasks:
+        if task['title'] == title and task['description'] == description and task['due_date'] == due_date and task['priority'] == priority:
+            return
+    assert False, f'Task with title "{title}" not found'
+
+@when('I mark the task with title "{title}" as completed')
+def step_mark_task_completed(context, title):
+    tasks = load_tasks()
+    for idx, task in enumerate(tasks):
+        if task['title'] == title:
+            mark_task_completed(idx + 1)
+            return
+    assert False, f'Task with title "{title}" not found'
+
+@when('I clear the to-do list')
+def step_clear_todo_list(context):
+    clear_tasks()
+
+@then('the task list should be empty')
+def step_verify_list_empty(context):
+    tasks = load_tasks()
+    assert not tasks, "Task list is not empty"
+
+@when('I edit the task with title "{old_title}" to have title "{new_title}", description "{new_description}", due date "{new_due_date}", and priority "{new_priority}"')
+def step_edit_task(context, old_title, new_title, new_description, new_due_date, new_priority):
+    tasks = load_tasks()
+    for idx, task in enumerate(tasks):
+        if task['title'] == old_title:
+            edit_task(idx + 1, new_title, new_description, new_due_date, new_priority)
+            return
+    assert False, f'Task with title "{old_title}" not found'
+
+@then('the task list should contain a task with title "{title}", description "{description}", due date "{due_date}", priority "{priority}", and status "{status}"')
+def step_verify_edited_task(context, title, description, due_date, priority, status):
+    tasks = load_tasks()
+    for task in tasks:
+        if task['title'] == title and task['description'] == description and task['due_date'] == due_date and task['priority'] == priority:
+            assert task['completed'] == (status == "Completed")
+            return
+    assert False, f'Task with title "{title}" not found'

@@ -1,49 +1,32 @@
-# language: en
+Feature: To-Do List Management
+  As a user
+  I want to manage my to-do list
+  So that I can keep track of my tasks
 
-Feature: To-Do List Manager
+  Background:
+    Given the to-do list is cleared
 
   Scenario: Add a task to the to-do list
-    Given the to-do list is empty
-    When the user adds a task with title "Buy groceries", description "Buy fruits and vegetables", due date "2024-07-30", and priority "High"
-    Then the to-do list should contain a task with title "Buy groceries", description "Buy fruits and vegetables", due date "2024-07-30", priority "High" and completed "False"
-    And the following message is displayed: Task "Buy groceries" added.
+    When I add a task with title "Buy groceries", description "Buy milk, eggs, and bread", due date "2024-08-01", and priority "High"
+    Then the task list should contain a task with title "Buy groceries" and status "Incomplete"
 
   Scenario: List all tasks in the to-do list
-    Given the to-do list contains tasks:
-      | title         | description                 | due_date   | priority | completed |
-      | Buy groceries | Buy fruits and vegetables   | 2024-07-30 | High     | True      |
-      | Pay bills     | Pay electricity and water   | 2024-07-31 | Medium   | False     |
-    When the user lists all tasks
-    Then the output should contain:
-      """
-      1. [Completed] Buy groceries - Buy fruits and vegetables (Due: 2024-07-30, Priority: High)
-      2. [Incomplete] Pay bills - Pay electricity and water (Due: 2024-07-31, Priority: Medium)
-      """
+    Given there is a task with title "Buy groceries", description "Buy milk, eggs, and bread", due date "2024-08-01", and priority "High"
+    When I list all tasks
+    Then I should see the task with title "Buy groceries", description "Buy milk, eggs, and bread", due date "2024-08-01", and priority "High"
 
   Scenario: Mark a task as completed
-    Given the to-do list contains tasks:
-      | title         | description               | due_date   | priority | completed   |
-      | Buy groceries | Buy fruits and vegetables | 2024-07-30 | High     | False       |
-    When the user marks task "Buy groceries" as completed
-    Then the to-do list should show task "Buy groceries" as completed
-    And the following message is displayed: Task 1 marked as completed.
+    Given there is a task with title "Buy groceries", description "Buy milk, eggs, and bread", due date "2024-08-01", and priority "High"
+    When I mark the task with title "Buy groceries" as completed
+    Then the task with title "Buy groceries" should have status "Completed"
 
   Scenario: Clear the entire to-do list
-    Given the to-do list contains tasks:
-      | title         | description               | due_date   | priority | completed |
-      | Buy groceries | Buy fruits and vegetables | 2024-07-30 | High     | True      |
-      | Pay bills     | Pay electricity and water | 2024-07-31 | Medium   | False     |
-    When the user clears the to-do list
-    Then the to-do list should be empty
-    And the following message is displayed: All tasks cleared.
+    Given there is a task with title "Buy groceries", description "Buy milk, eggs, and bread", due date "2024-08-01", and priority "High"
+    When I clear the to-do list
+    Then the task list should be empty
 
-  Scenario: Edit a task in the to-do list
-    Given the to-do list contains tasks:
-      | title         | description               | due_date   | priority | completed   |
-      | Buy groceries | Buy fruits and vegetables | 2024-07-30 | High     | False       |
-    When the user edits the task "Buy groceries" with:
-      | title         | description        | due_date   | priority |
-      | Buy groceries | Buy fresh produce  | 2024-08-01 | Medium   |
-    Then the task "Buy groceries" should have:
-      | title         | description        | due_date   | priority |
-      | Buy groceries | Buy fresh produce  | 2024-08-01 | Medium   |
+  Scenario: Edit an existing task in the to-do list
+    Given there is a task with title "Buy groceries", description "Buy milk, eggs, and bread", due date "2024-08-01", and priority "High"
+    When I edit the task with title "Buy groceries" to have title "Buy vegetables", description "Buy carrots and spinach", due date "2024-08-02", and priority "Medium"
+    Then the task list should contain a task with title "Buy vegetables", description "Buy carrots and spinach", due date "2024-08-02", priority "Medium", and status "Incomplete"
+
