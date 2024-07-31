@@ -1,1 +1,37 @@
-[]
+[
+    {
+        "title": "Buy groceries",
+        "description": "Buy fruits and vegetables",
+        "due_date": "2024-07-30",
+        "priority": "High",
+        "completed": false
+    },
+    {
+        "title": "Buy groceries",
+        "description": "Buy fruits and vegetables",
+        "due_date": "2024-07-30",
+        "priority": "High",
+        "completed": false
+    },
+    {
+        "title": "Buy groceries",
+        "description": "Buy fruits and vegetables",
+        "due_date": "2024-07-30",
+        "priority": "High",
+        "completed": false
+    },
+    {
+        "title": "Buy groceries",
+        "description": "Buy fruits and vegetables",
+        "due_date": "2024-07-30",
+        "priority": "High",
+        "completed": false
+    },
+    {
+        "title": "Buy groceries",
+        "description": "Buy fruits and vegetables",
+        "due_date": "2024-07-30",
+        "priority": "High",
+        "completed": false
+    }
+]

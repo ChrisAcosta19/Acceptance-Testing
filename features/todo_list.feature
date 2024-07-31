@@ -17,7 +17,7 @@ Feature: To-Do List Manager
     Then the output should contain:
       """
       1. [Completed] Buy groceries - Buy fruits and vegetables (Due: 2024-07-30, Priority: High)
-      2. [Incomplete] BPay bills - Pay electricity and water (Due: 2024-07-31, Priority: Medium)
+      2. [Incomplete] Pay bills - Pay electricity and water (Due: 2024-07-31, Priority: Medium)
       """
 
   Scenario: Mark a task as completed
