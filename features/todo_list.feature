@@ -29,4 +29,3 @@ Feature: To-Do List Management
     Given there is a task with title "Buy groceries", description "Buy milk, eggs, and bread", due date "2024-08-01", and priority "High"
     When I edit the task with title "Buy groceries" to have title "Buy vegetables", description "Buy carrots and spinach", due date "2024-08-02", and priority "Medium"
     Then the task list should contain a task with title "Buy vegetables", description "Buy carrots and spinach", due date "2024-08-02", priority "Medium", and status "Incomplete"
-

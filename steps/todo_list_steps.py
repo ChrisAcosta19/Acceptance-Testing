@@ -85,6 +85,15 @@ def step_mark_task_completed(context, title):
             return
     assert False, f'Task with title "{title}" not found'
 
+@then('the task with title "{title}" should have status "Completed"')
+def step_verify_task_completed(context, title):
+    tasks = load_tasks()
+    for task in tasks:
+        if task['title'] == title:
+            assert task['completed'] == True
+            return
+    assert False, f'Task with title "{title}" not found'
+
 @when('I clear the to-do list')
 def step_clear_todo_list(context):
     clear_tasks()
