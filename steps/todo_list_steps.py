@@ -1,47 +1,5 @@
 from behave import given, when, then
-import json
-import os
-
-TASKS_FILE = 'tasks.json'
-
-def clear_tasks():
-    if os.path.exists(TASKS_FILE):
-        os.remove(TASKS_FILE)
-
-def load_tasks():
-    if os.path.exists(TASKS_FILE):
-        with open(TASKS_FILE, 'r') as file:
-            return json.load(file)
-    return []
-
-def save_tasks(tasks):
-    with open(TASKS_FILE, 'w') as file:
-        json.dump(tasks, file, indent=4)
-
-def add_task(title, description, due_date, priority):
-    tasks = load_tasks()
-    task = {
-        'title': title,
-        'description': description,
-        'due_date': due_date,
-        'priority': priority,
-        'completed': False
-    }
-    tasks.append(task)
-    save_tasks(tasks)
-
-def edit_task(task_number, title, description, due_date, priority):
-    tasks = load_tasks()
-    tasks[task_number - 1]['title'] = title
-    tasks[task_number - 1]['description'] = description
-    tasks[task_number - 1]['due_date'] = due_date
-    tasks[task_number - 1]['priority'] = priority
-    save_tasks(tasks)
-
-def mark_task_completed(task_number):
-    tasks = load_tasks()
-    tasks[task_number - 1]['completed'] = True
-    save_tasks(tasks)
+from todo_list import clear_tasks, load_tasks, add_task, edit_task, mark_task_completed
 
 @given('the to-do list is cleared')
 def step_clear_todo_list(context):
